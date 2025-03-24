@@ -1,13 +1,13 @@
-package com.adal.productos;
+package com.commerce.pedidos;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class MicroservicioProductosApplication {
+public class MicroservicioPedidosApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(MicroservicioProductosApplication.class, args);
+		SpringApplication.run(MicroservicioPedidosApplication.class, args);
 	}
 
 }

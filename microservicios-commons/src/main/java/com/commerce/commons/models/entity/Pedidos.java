@@ -1,12 +1,24 @@
 package com.commerce.commons.models.entity;
 
+import java.util.List;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.DecimalMin;
@@ -23,9 +35,13 @@ public class Pedidos {
 	@Column(name = "ID_PEDIDO")
 	private Long id;
 	
-	@Column(name = "ID_CLIENTE")
-    @NotNull(message = "El cliente es obligatorio")
-    private Cliente idCliente;
+	// @Column(name = "ID_CLIENTE")
+    // private Cliente idCliente;
+	@JsonIgnoreProperties({"handler", "hibernateLazyInitializer"})
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ID_CLIENTE", referencedColumnName = "ID_CLIENTE")
+	@NotNull(message = "El cliente es obligatorio")
+    private Cliente cliente; // ¡Usa el objeto Cliente, no solo el ID!
 
     @Column(name = "TOTAL")
     @NotNull(message = "El total es obligatorio")
@@ -40,6 +56,17 @@ public class Pedidos {
     @Column(name = "ID_ESTADO")
     @NotNull(message = "El estado es obligatorio")
     private Integer idEstado;
+    
+    @JsonIgnoreProperties({"handler", "hibernateLazyInitializer"})
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinTable(
+        name = "PEDIDOS_PRODUCTOS", // Nombre de la tabla intermedia
+        joinColumns = @JoinColumn(name = "ID_PEDIDO", referencedColumnName = "ID_PEDIDO"), // Columna que referencia a PEDIDOS
+        inverseJoinColumns = @JoinColumn(name = "ID_PRODUCTO", referencedColumnName = "ID_PRODUCTO") // Columna que referencia a PRODUCTOS
+    )
+    
+    @JsonBackReference
+    private List<Productos> productos; // Usa Set para evitar duplicados
 
 	public Long getId() {
 		return id;
@@ -49,12 +76,12 @@ public class Pedidos {
 		this.id = id;
 	}
 
-	public Cliente getIdCliente() {
-		return idCliente;
+	public Cliente getCliente() {
+		return cliente;
 	}
 
-	public void setIdCliente(Cliente idCliente) {
-		this.idCliente = idCliente;
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
 	}
 
 	public Double getTotal() {
@@ -81,6 +108,20 @@ public class Pedidos {
 		this.idEstado = idEstado;
 	}
 
+	public List<Productos> getProductos() {
+		return productos;
+	}
+
+	public void setProductos(List<Productos> productos) {
+		this.productos = productos;
+	}
+
+	public void addProducto(Productos producto) {
+		this.productos.add(producto);
+	}
 	
+	public void removeProducto(Productos producto) {
+		this.productos.remove(producto);
+	}
         
 }

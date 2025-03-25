@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.commerce.commons.models.entity.Pedidos;
+import com.commerce.commons.models.entity.Productos;
 import com.commerce.pedidos.models.repositories.PedidoRepository;
 
 @Service
@@ -17,6 +18,9 @@ public class PedidoServiceImpl implements IService<Pedidos>{
 	
 	@Autowired
 	private PedidoRepository repository;
+	
+	@Autowired
+	private productoRepository productoRepository;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -71,6 +75,24 @@ public class PedidoServiceImpl implements IService<Pedidos>{
 		}
 	}
 
+	
+	@Transactional
+	public Pedidos addProducto(Long idPedido, Long idProducto) {
+		Pedidos pedidos = null;
+		Optional<Pedidos> optPedidos = repository.findById(idProducto);
+		if(optPedidos.isPresent()) {
+			Optional<Pedidos> optProducto = repository.findById(idProducto);
+			if(optProducto.isPresent()) {
+				pedidos = optPedidos.get();
+					Productos producto = optProducto.get();
+					pedidos.addProducto(producto);
+					pedidos = repository.save(producto);
+					pedidos.setProductos(pedido);
+					producto = productoRepository.save(producto);
+			}
+		}
+		return pedidos;
+	}
 	
 	
 	

@@ -37,6 +37,7 @@ public class CommonServiceImpl <E, R extends JpaRepository<E, Long>> implements 
 		Optional<E> entity = repository.findById(id);
 		if(entity.isPresent()) {
 			repository.deleteById(id);
+			
 			return entity;
 		}
 		return Optional.empty();

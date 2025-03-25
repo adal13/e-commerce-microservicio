@@ -4,14 +4,23 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+<<<<<<< HEAD
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+=======
+import org.hibernate.annotations.ManyToAny;
+
+import jakarta.persistence.CascadeType;
+>>>>>>> rommel
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -47,6 +56,7 @@ public class Productos {
     @Column(name = "STOCK")
     @NotNull(message = "El stock del producto es obligatorio")
     @Min(value = 0, message = "El stock no puede ser negativo")
+<<<<<<< HEAD
     private Integer stock;
     
     @ManyToMany(mappedBy = "productos")
@@ -60,6 +70,9 @@ public class Productos {
 	public void setPedidos(List<Pedidos> pedidos) {
 		this.pedidos = pedidos;
 	}
+=======
+    private Long stock;
+>>>>>>> rommel
 
 	public Long getId() {
 		return id;
@@ -93,15 +106,39 @@ public class Productos {
 		this.precio = precio;
 	}
 
-	public Integer getStock() {
+	public Long getStock() {
 		return stock;
 	}
 
-	public void setStock(Integer stock) {
+	public void setStock(Long stock) {
 		this.stock = stock;
 	}
     
+<<<<<<< HEAD
 	
     
+=======
+    /*
+    
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinTable(name = "PRODUCTOS",
+    joinColumns = @JoinColumn(name = "ID_PRODUCTO" , referencedColumnName ="ID_PRODUCTO"),
+    inverseJoinColumns = @JoinColumn(name = "ID_PEDIDO", referencedColumnName = "ID_PEDIDO"))
+    private List<Pedidos> pedidos;
+
+*/
+
+
+
+
+>>>>>>> rommel
 }
- 	
+
+    /*
+    @ManyToMany(mappedBy = "productos") 
+    private Set<Pedidos> pedidos = new HashSet<>();
+*/
+	
+
+    
+    

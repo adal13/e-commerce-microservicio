@@ -1,7 +1,11 @@
 package com.commerce.commons.models.entity;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -45,8 +49,17 @@ public class Productos {
     @Min(value = 0, message = "El stock no puede ser negativo")
     private Integer stock;
     
-    @ManyToMany(mappedBy = "productos") 
-    private Set<Pedidos> pedidos = new HashSet<>();
+    @ManyToMany(mappedBy = "productos")
+    @JsonManagedReference
+    private List<Pedidos> pedidos;
+
+	public List<Pedidos> getPedidos() {
+		return pedidos;
+	}
+
+	public void setPedidos(List<Pedidos> pedidos) {
+		this.pedidos = pedidos;
+	}
 
 	public Long getId() {
 		return id;
@@ -87,18 +100,8 @@ public class Productos {
 	public void setStock(Integer stock) {
 		this.stock = stock;
 	}
-
-	public Set<Pedidos> getPedidos() {
-		return pedidos;
-	}
-
-	public void setPedidos(Set<Pedidos> pedidos) {
-		this.pedidos = pedidos;
-	}
     
-    
-
-    
+	
     
 }
  	

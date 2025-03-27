@@ -23,7 +23,7 @@ public class ProductosDTO {
 
     @NotNull(message = "El stock del producto es obligatorio")
     @Min(value = 0, message = "El stock no puede ser negativo")
-    private Long stock;
+    private Number stock;
 
 	public Long getId() {
 		return id;
@@ -57,11 +57,11 @@ public class ProductosDTO {
 		this.precio = precio;
 	}
 
-	public Long getStock() {
+	public Number getStock() {
 		return stock;
 	}
 
-	public void setStock(Long  stock) {
+	public void setStock(Number  stock) {
 		this.stock = stock;
 	}
 

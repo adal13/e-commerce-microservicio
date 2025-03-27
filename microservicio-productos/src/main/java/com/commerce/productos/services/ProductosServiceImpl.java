@@ -19,14 +19,13 @@ public class ProductosServiceImpl extends CommonServiceImpl<Productos, Productos
 implements ProductosService{
 	
 	private final ProductosMapper mapper;
-	
-	@Autowired
-	private ProductosRepository repository;
+	private final ProductosRepository repository;
 	
 
-	public ProductosServiceImpl(ProductosMapper mapper) {
-		super();
-		this.mapper=mapper;
+	public ProductosServiceImpl(ProductosMapper mapper, ProductosRepository repository) {
+		super(repository);
+		this.mapper = mapper;
+		this.repository = repository;
 	}
 	
 	@Override
@@ -70,10 +69,6 @@ implements ProductosService{
 		    }
 			
 	}
-
-
-
-
 	
 }
 	

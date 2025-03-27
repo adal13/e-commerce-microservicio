@@ -25,6 +25,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class ProductosControllers extends CommonController<Productos, ProductosService> {
 	
+	public ProductosControllers(ProductosService service) {
+		super(service);
+	}
+
 	private ProductosServiceImpl serviceImpl;
 
 
@@ -52,19 +56,19 @@ public class ProductosControllers extends CommonController<Productos, ProductosS
 		
 	}
 	
-	@DeleteMapping("/{id}")
+	/*@DeleteMapping("/{id}")
 	public ResponseEntity<Productos> delete(@PathVariable Long id){
-		
-		Optional<Productos> productosDB = Optional.of(serviceImpl.deleteProductos(id));
-		System.out.println("Hola"+productosDB);
-		return productosDB.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-	}
+		serviceImpl.deleteProductos(id);
+		return ResponseEntity.ok().build();
+	}*/
+	
+	 @DeleteMapping("/{id}")
+	    public ResponseEntity<?> delete(@PathVariable Long id) {
+	        Productos deletedProducto = service.deleteProductos(id);
+	        if (deletedProducto != null) {
+	            return ResponseEntity.ok(deletedProducto);
+	        } else {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Producto no encontrado");
+	        }
+	    }
 }
-
-	
-	/*
-
-	
-	}
-	*/

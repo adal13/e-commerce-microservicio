@@ -8,7 +8,10 @@ import com.commerce.productos.dto.ProductosDTO;
 @Component
 public class ProductosMapper {
     public ProductosDTO entityToDto(Productos productos) {
-        if (productos == null) return null;
+        if (productos == null) 
+        {
+        	return null;
+        }
 
         ProductosDTO productoDTO = new ProductosDTO();
         productoDTO.setId(productos.getId());
@@ -29,7 +32,11 @@ public class ProductosMapper {
         	productos.setNombre(productosDTO.getNombre());
         	productos.setDescripcion(productosDTO.getDescripcion());
         	productos.setPrecio(productosDTO.getPrecio());
-        	productos.setStock(productosDTO.getStock());
+        	//productos.setStock(productosDTO.getStock());
+        	
+        	  // Manejo seguro para evitar problemas con valores nulos
+            productos.setStock(productosDTO.getStock() != null ? (Integer) productosDTO.getStock() : 0);
+        	
         	return productos;
         }
 

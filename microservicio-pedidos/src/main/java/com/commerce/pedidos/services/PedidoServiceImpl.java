@@ -21,8 +21,12 @@ public class PedidoServiceImpl implements IService<Pedidos>{
 	@Autowired
 	private PedidoRepository repository;
 	
-	@Autowired
-	private ProductoClient productoCliente;
+	private final ProductoClient productoCliente;
+	
+
+	public PedidoServiceImpl(ProductoClient productoCliente) {
+		this.productoCliente = productoCliente;
+	}
 
 	@Override
 	@Transactional(readOnly = true)

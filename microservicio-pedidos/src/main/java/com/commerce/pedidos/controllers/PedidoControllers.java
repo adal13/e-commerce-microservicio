@@ -100,12 +100,16 @@ public class PedidoControllers{
 	}
 	
 	@PutMapping("/{idPedido}/{idProducto}")
-	public ResponseEntity<Pedidos> addProducto(@PathVariable Long idPedido, @PathVariable Long idProducto){
-		Pedidos optCategoria = pedidoServiceImpl.addProducto(idPedido, idProducto);
-		if(optCategoria == null) {
-			return ResponseEntity.notFound().build();
-		}
-		return ResponseEntity.ok(optCategoria);
+	public ResponseEntity<Pedidos> addProducto(@PathVariable Long idPedido, @PathVariable Long idProducto) {
+		System.out.println("addProducto");
+	    Pedidos pedidoActualizado = pedidoServiceImpl.addProducto(idPedido, idProducto);
+	    
+	    if (pedidoActualizado != null) {
+	        return ResponseEntity.ok(pedidoActualizado);
+	    } else {
+	        return ResponseEntity.notFound().build();
+	    }
 	}
+
 	
 }

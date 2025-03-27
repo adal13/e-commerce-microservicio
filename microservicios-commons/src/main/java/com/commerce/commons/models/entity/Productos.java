@@ -1,26 +1,14 @@
 package com.commerce.commons.models.entity;
-
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-<<<<<<< HEAD
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
-=======
-import org.hibernate.annotations.ManyToAny;
-
-import jakarta.persistence.CascadeType;
->>>>>>> rommel
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -34,45 +22,37 @@ import jakarta.validation.constraints.Size;
 public class Productos {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PRODUCTO_SEQ")
-	@SequenceGenerator(name = "PRODUCTO_SEQ", sequenceName = "PRODUCTO_SEQ", allocationSize=1)
+	@SequenceGenerator(name = "PRODUCTO_SEQ", sequenceName = "PRODUCTO_SEQ", allocationSize = 1)
 	@Column(name = "ID_PRODUCTO")
 	private Long id;
-	
+
 	@Column(name = "NOMBRE")
-    @NotNull(message = "El nombre del producto es obligatorio")
-    @Size(min = 1, max = 50, message = "El nombre del producto debe tener entre 1 y 50 caracteres")
-    private String nombre;
+	@NotNull(message = "El nombre del producto es obligatorio")
+	@Size(min = 1, max = 50, message = "El nombre del producto debe tener entre 1 y 50 caracteres")
+	private String nombre;
 
-    @Column(name = "DESCRIPCION")
-    @NotBlank(message = "La descripción del producto es obligatoria")
-    @Size(min = 1, max = 100, message = "La descripción debe tener entre 1 y 100 caracteres")
-    private String descripcion;
+	@Column(name = "DESCRIPCION")
+	@NotBlank(message = "La descripción del producto es obligatoria")
+	@Size(min = 1, max = 100, message = "La descripción debe tener entre 1 y 100 caracteres")
+	private String descripcion;
 
-    @Column(name = "PRECIO")
-    @NotNull(message = "El precio del producto es obligatorio")
-    @Min(value = 0, message = "El precio debe ser mayor o igual a 0")
-    private Double precio;
+	@Column(name = "PRECIO")
+	@NotNull(message = "El precio del producto es obligatorio")
+	@Min(value = 0, message = "El precio debe ser mayor o igual a 0")
+	private Double precio;
 
-    @Column(name = "STOCK")
-    @NotNull(message = "El stock del producto es obligatorio")
-    @Min(value = 0, message = "El stock no puede ser negativo")
-<<<<<<< HEAD
-    private Integer stock;
-    
-    @ManyToMany(mappedBy = "productos")
-    @JsonManagedReference
-    private List<Pedidos> pedidos;
+	@Column(name = "STOCK")
+	@NotNull(message = "El stock del producto es obligatorio")
+	@Min(value = 0, message = "El stock no puede ser negativo")
+	private Integer stock;
 
-	public List<Pedidos> getPedidos() {
-		return pedidos;
+	@ManyToMany(mappedBy = "productos")
+	@JsonBackReference
+	private List<Pedidos> pedidos;
+
+	public Productos() {
+		this.pedidos = new ArrayList<>();
 	}
-
-	public void setPedidos(List<Pedidos> pedidos) {
-		this.pedidos = pedidos;
-	}
-=======
-    private Long stock;
->>>>>>> rommel
 
 	public Long getId() {
 		return id;
@@ -106,39 +86,20 @@ public class Productos {
 		this.precio = precio;
 	}
 
-	public Long getStock() {
+	public Integer getStock() {
 		return stock;
 	}
 
-	public void setStock(Long stock) {
+	public void setStock(Integer stock) {
 		this.stock = stock;
 	}
-    
-<<<<<<< HEAD
-	
-    
-=======
-    /*
-    
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinTable(name = "PRODUCTOS",
-    joinColumns = @JoinColumn(name = "ID_PRODUCTO" , referencedColumnName ="ID_PRODUCTO"),
-    inverseJoinColumns = @JoinColumn(name = "ID_PEDIDO", referencedColumnName = "ID_PEDIDO"))
-    private List<Pedidos> pedidos;
 
-*/
+	public List<Pedidos> getPedidos() {
+		return pedidos;
+	}
 
+	public void setPedidos(List<Pedidos> pedidos) {
+		this.pedidos = pedidos;
+	}
 
-
-
->>>>>>> rommel
 }
-
-    /*
-    @ManyToMany(mappedBy = "productos") 
-    private Set<Pedidos> pedidos = new HashSet<>();
-*/
-	
-
-    
-    

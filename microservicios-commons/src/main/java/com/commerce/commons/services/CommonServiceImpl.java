@@ -10,9 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class CommonServiceImpl <E, R extends JpaRepository<E, Long>> implements CommonService<E>{
 
-	@Autowired
-	protected R repository;
+	protected final R repository;
 	
+	public CommonServiceImpl(R repository) {
+		 this.repository = repository;
+	}
+
 	@Override
 	@Transactional(readOnly = true)
 	public List<E> listar() {

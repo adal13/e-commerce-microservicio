@@ -2,11 +2,13 @@ package com.commerce.commons.models.entity;
 
 import java.util.List;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.CascadeType;
@@ -41,11 +43,12 @@ public class Pedidos {
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_CLIENTE", referencedColumnName = "ID_CLIENTE")
 	@NotNull(message = "El cliente es obligatorio")
+	@JsonBackReference
     private Cliente cliente; // ¡Usa el objeto Cliente, no solo el ID!
 
     @Column(name = "TOTAL")
     @NotNull(message = "El total es obligatorio")
-    @DecimalMin(value = "0.0", inclusive = false, message = "El total debe ser mayor que 0")
+    @DecimalMin(value = "0.0", message = "El total debe ser mayor que 0")
     private Double total;
 
     @Column(name = "FECHA_CREACION")
@@ -64,9 +67,13 @@ public class Pedidos {
         joinColumns = @JoinColumn(name = "ID_PEDIDO", referencedColumnName = "ID_PEDIDO"), // Columna que referencia a PEDIDOS
         inverseJoinColumns = @JoinColumn(name = "ID_PRODUCTO", referencedColumnName = "ID_PRODUCTO") // Columna que referencia a PRODUCTOS
     )
-    
-    @JsonBackReference
+    @JsonManagedReference
     private List<Productos> productos; // Usa Set para evitar duplicados
+    
+
+	public Pedidos() {
+		this.productos = new ArrayList<>();
+	}
 
 	public Long getId() {
 		return id;
@@ -116,12 +123,12 @@ public class Pedidos {
 		this.productos = productos;
 	}
 
-	public void addProducto(Productos producto) {
-		this.productos.add(producto);
-	}
-	
 	public void removeProducto(Productos producto) {
 		this.productos.remove(producto);
+	}
+	
+	public void addProducto(Productos prouductos) {
+		this.productos.add(prouductos);
 	}
         
 }

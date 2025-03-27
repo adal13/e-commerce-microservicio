@@ -19,9 +19,17 @@ import com.commerce.commons.services.CommonService;
 
 import jakarta.validation.Valid;
 
+
 public class CommonController<E, S extends CommonService<E>> {
 	@Autowired
 	protected S service;
+	
+	
+	
+	public CommonController(S service) {
+		this.service = service;
+	}
+
 	@GetMapping
 	public ResponseEntity<List<E>> getAll(){
 		return ResponseEntity.ok(service.listar());
@@ -46,7 +54,7 @@ public class CommonController<E, S extends CommonService<E>> {
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<E> delete(@PathVariable Long id){
+	public ResponseEntity<?> delete(@PathVariable Long id){
 		Optional<E> entity = service.eliminarPorId(id);
 		if(entity.isPresent()) {
 			return ResponseEntity.ok().body(entity.get());

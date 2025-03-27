@@ -14,7 +14,7 @@ import com.commerce.commons.models.entity.Productos;
 @FeignClient(name = "microservicio-productos")
 public interface ProductoClient {
 	@GetMapping("/{id}")
-	public Optional<Productos> getProductoById(@PathVariable Long id);
+	Productos getProductoById(@PathVariable Long id);
 
 	@PostMapping("/")
     public Productos save(@RequestBody Productos producto);

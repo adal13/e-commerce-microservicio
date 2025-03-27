@@ -15,6 +15,8 @@ import com.commerce.pedidos.clients.ProductoClient;
 import com.commerce.pedidos.dto.PedidoDTO;
 import com.commerce.pedidos.models.repositories.PedidoRepository;
 
+import feign.FeignException;
+
 @Service
 public class PedidoServiceImpl implements IService<Pedidos>{
 	
@@ -56,12 +58,13 @@ public class PedidoServiceImpl implements IService<Pedidos>{
 		 Pedidos pedido = new Pedidos();
 		 
 		 
-		 Productos producto = productoCliente
-				 .getProductoById(pedidoDTO.getClienteId())
-				 .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
-		    // Mapear manualmente los campos del DTO a la entidad
-		    //pedido.setCliente(pedidoDTO.getClienteId());
-		 	// pedido.setCliente(producto);
+		 Productos producto;
+		 try {
+		     producto = productoCliente.getProductoById(pedidoDTO.getClienteId());
+		 } catch (FeignException.NotFound e) {
+		     throw new RuntimeException("Producto no encontrado");
+		 }
+
 		 
 		    pedido.setTotal(pedidoDTO.getTotal());
 		    pedido.setFechaCreacion(pedidoDTO.getFechaCreacion());
@@ -127,22 +130,26 @@ public class PedidoServiceImpl implements IService<Pedidos>{
 	
 	
 	public Pedidos addProducto(Long idPedido, Long idProducto) {
+	    // Buscar el pedido en la base de datos
 	    Optional<Pedidos> pedidoOpt = repository.findById(idPedido);
 	    if (!pedidoOpt.isPresent()) {
-	        return null; // O lanzar una excepción, dependiendo del comportamiento que desees
+	        return null; // O lanzar una excepción
 	    }
 
-	    Optional<Productos> productoOpt = productoCliente.getProductoById(idProducto);
-	    if (!productoOpt.isPresent()) {
-	        return null; // O lanzar una excepción si el producto no se encuentra
+	    // Llamar a FeignClient para obtener el producto
+	    Productos producto;
+	    try {
+	        producto = productoCliente.getProductoById(idProducto);
+	    } catch (FeignException.NotFound e) {
+	        return null; // O manejar el error adecuadamente
 	    }
 
+	    // Agregar producto al pedido y guardar
 	    Pedidos pedido = pedidoOpt.get();
-	    Productos producto = productoOpt.get();
-	    
 	    pedido.getProductos().add(producto);
-	    return repository.save(pedido); // Guarda y devuelve el pedido actualizado
+	    return repository.save(pedido);
 	}
+
 	
 	public List<Productos> listarProductosPorPedido(Long pedidoId) {
 	    return repository.findById(pedidoId).map(Pedidos::getProductos).orElse(new ArrayList<>());

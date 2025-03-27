@@ -1,16 +1,18 @@
 package com.commerce.pedidos.services;
 
-import java.awt.print.Pageable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.commerce.commons.models.entity.Pedidos;
 import com.commerce.commons.models.entity.Productos;
+import com.commerce.pedidos.clients.ProductoClient;
+import com.commerce.pedidos.dto.PedidoDTO;
 import com.commerce.pedidos.models.repositories.PedidoRepository;
 
 @Service
@@ -20,7 +22,7 @@ public class PedidoServiceImpl implements IService<Pedidos>{
 	private PedidoRepository repository;
 	
 	@Autowired
-	private productoRepository productoRepository;
+	private ProductoClient productoCliente;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -29,6 +31,7 @@ public class PedidoServiceImpl implements IService<Pedidos>{
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Page<Pedidos> listar(Pageable page) {
 		// TODO Auto-generated method stub
 		return null;
@@ -43,8 +46,24 @@ public class PedidoServiceImpl implements IService<Pedidos>{
 
 	@Override
 	@Transactional
-	public Pedidos crear(Pedidos entity) {
-		return repository.save(entity);
+	public Pedidos crear(PedidoDTO pedidoDTO) {
+		// return repository.save(entity);
+		
+		 Pedidos pedido = new Pedidos();
+		 
+		 
+		 Productos producto = productoCliente
+				 .getProductoById(pedidoDTO.getClienteId())
+				 .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+		    // Mapear manualmente los campos del DTO a la entidad
+		    //pedido.setCliente(pedidoDTO.getClienteId());
+		 	// pedido.setCliente(producto);
+		 
+		    pedido.setTotal(pedidoDTO.getTotal());
+		    pedido.setFechaCreacion(pedidoDTO.getFechaCreacion());
+		    pedido.setIdEstado(pedidoDTO.getIdEstado());
+		    // Otros campos...
+		    return repository.save(pedido);
 	}
 
 	@Override
@@ -75,48 +94,56 @@ public class PedidoServiceImpl implements IService<Pedidos>{
 		}
 	}
 
-	
+	/*@Override
 	@Transactional
 	public Pedidos addProducto(Long idPedido, Long idProducto) {
-		Pedidos pedidos = null;
-		Optional<Pedidos> optPedidos = repository.findById(idProducto);
-		if(optPedidos.isPresent()) {
-			Optional<Pedidos> optProducto = repository.findById(idProducto);
-			if(optProducto.isPresent()) {
-				pedidos = optPedidos.get();
-					Productos producto = optProducto.get();
-					pedidos.addProducto(producto);
-					pedidos = repository.save(producto);
-					pedidos.setProductos(pedido);
-					producto = productoRepository.save(producto);
-			}
-		}
-		return pedidos;
+	    Pedidos pedido = null;
+
+	    Optional<Pedidos> optPedido = repository.findById(idPedido);
+	    
+	    if (optPedido.isPresent()) {
+	        Optional<Productos> optProducto = productoCliente.getProductoById(idProducto);
+
+	        if (optProducto.isPresent()) {
+	            pedido = optPedido.get();
+	            Productos producto = optProducto.get();
+
+	            // Agregar producto al pedido
+	            pedido.addProducto(producto);
+	            pedido = repository.save(pedido);
+
+	            // Relacionar el producto con el pedido (si aplica)
+	            producto.setPedidos((List<Pedidos>) pedido); // Asegúrate de tener este método en Productos
+	            producto = productoCliente.save(producto);
+	        }
+	    }
+
+	    return pedido;
+	}*/
+	
+	
+	public Pedidos addProducto(Long idPedido, Long idProducto) {
+	    Optional<Pedidos> pedidoOpt = repository.findById(idPedido);
+	    if (!pedidoOpt.isPresent()) {
+	        return null; // O lanzar una excepción, dependiendo del comportamiento que desees
+	    }
+
+	    Optional<Productos> productoOpt = productoCliente.getProductoById(idProducto);
+	    if (!productoOpt.isPresent()) {
+	        return null; // O lanzar una excepción si el producto no se encuentra
+	    }
+
+	    Pedidos pedido = pedidoOpt.get();
+	    Productos producto = productoOpt.get();
+	    
+	    pedido.getProductos().add(producto);
+	    return repository.save(pedido); // Guarda y devuelve el pedido actualizado
 	}
 	
-	
-	
-	/*
-	 * private final PedidoMapper mapper;
-	 * 
-	 * public PedidoServiceImpl(PedidoMapper mapper) { super(); this.mapper =
-	 * mapper; }
-	 * 
-	 * 
-	 * @Override
-	 * 
-	 * @Transactional public Pedidos createPedidoDTO(PedidoDTO pedidoDTO) { try {
-	 * Pedidos pedido = mapper.dtoToEntity(pedidoDTO);
-	 * System.out.println("🛠 Vuelo convertido desde DTO: " + pedido); return
-	 * repository.save(pedido); }catch(Exception e){ throw new
-	 * RuntimeException("Error al guardar el vuelo: " + e.getMessage(), e); } }
-	 * 
-	 * @Override
-	 * 
-	 * @Transactional public Pedidos actualizar(PedidoDTO pedidoDTO, Long id) {
-	 * Optional<Pedidos> optPedidos = repository.findById(id);
-	 * if(optPedidos.isPresent()) { Pedidos pedido = mapper.dtoToEntity(pedidoDTO);
-	 * pedido.setId(id); return repository.save(pedido); } return null; }
-	 */
-	
+	public List<Productos> listarProductosPorPedido(Long pedidoId) {
+	    return repository.findById(pedidoId).map(Pedidos::getProductos).orElse(new ArrayList<>());
+	}
+
+
+
 }

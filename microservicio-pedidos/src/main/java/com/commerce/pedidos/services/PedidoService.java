@@ -1,7 +1,5 @@
 package com.commerce.pedidos.services;
 
-import java.util.List;
-
 import com.commerce.commons.models.entity.Pedidos;
 import com.commerce.commons.services.CommonService;
 import com.commerce.pedidos.dto.PedidoDTO;

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.commerce.commons.controllers.CommonController;
 import com.commerce.commons.models.entity.Pedidos;
+import com.commerce.commons.models.entity.Productos;
 import com.commerce.pedidos.MicroservicioPedidosApplication;
 import com.commerce.pedidos.dto.PedidoDTO;
 import com.commerce.pedidos.services.PedidoService;
@@ -42,6 +43,13 @@ public class PedidoControllers{
 		return ResponseEntity.ok(pedidoServiceImpl.listar());
 	}
 	
+	@GetMapping("/pedido/{pedidoId}/productos")
+	public ResponseEntity<List<Productos>> getProductosByPedido(@PathVariable Long pedidoId) {
+	    List<Productos> productos = pedidoServiceImpl.listarProductosPorPedido(pedidoId);
+	    return ResponseEntity.ok(productos);
+	}
+
+	
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Pedidos> getById(@PathVariable Long id){
@@ -53,11 +61,22 @@ public class PedidoControllers{
 		}
 	}
 	
-	@PostMapping
-	public ResponseEntity<Pedidos> create(@RequestBody Pedidos pedidos){
-		return ResponseEntity.status(HttpStatus.CREATED).body(pedidoServiceImpl.crear(pedidos));
-				
+	//@PostMapping("/pedido-dto")
+	//public ResponseEntity<Pedidos> create(@RequestBody PedidoDTO pedidoDTO){
+	//	return ResponseEntity.status(HttpStatus.CREATED).body(pedidoServiceImpl.crear(pedidoDTO));
+	//}	
+	
+	
+	@PostMapping("/pedido-dto")
+	public ResponseEntity<Pedidos> create(@Valid @RequestBody PedidoDTO pedidoDTO, BindingResult result) {
+	    if (result.hasErrors()) {
+	        // Maneja los errores de validación (por ejemplo, devolviendo los errores como respuesta)
+	        return ResponseEntity.badRequest().body(null);
+	    }
+	    Pedidos pedido = pedidoServiceImpl.crear(pedidoDTO);  // Suponiendo que se convierte en Pedidos
+	    return ResponseEntity.status(HttpStatus.CREATED).body(pedido);
 	}
+
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<Pedidos> update(@RequestBody Pedidos pedidos, @PathVariable Long id){
@@ -80,36 +99,13 @@ public class PedidoControllers{
 		}
 	}
 	
-	@PutMapping("/{idCategoria}/{idProducto}")
-	public ResponseEntity<Pedidos> addProducto(@PathVariable Long idCategoria, @PathVariable Long idProducto){
-		Pedidos optCategoria = pedidoServiceImpl.addProducto(idCategoria, idProducto);
+	@PutMapping("/{idPedido}/{idProducto}")
+	public ResponseEntity<Pedidos> addProducto(@PathVariable Long idPedido, @PathVariable Long idProducto){
+		Pedidos optCategoria = pedidoServiceImpl.addProducto(idPedido, idProducto);
 		if(optCategoria == null) {
 			return ResponseEntity.notFound().build();
 		}
 		return ResponseEntity.ok(optCategoria);
 	}
-	
-	
-	
-	/*
-	 * @PostMapping("/pedido-dto") public ResponseEntity<?>
-	 * create(@Valid @RequestBody PedidoDTO pedidoDTO, BindingResult result){
-	 * if(result.hasErrors()) {
-	 * 
-	 * return this.validar(result); } return
-	 * ResponseEntity.status(HttpStatus.CREATED).body(service.createPedidoDTO(
-	 * pedidoDTO));
-	 * 
-	 * }
-	 * 
-	 * @PutMapping("/{id}") public ResponseEntity<?> update(@Valid @RequestBody
-	 * PedidoDTO pedidoDTO, BindingResult result, @PathVariable Long id){
-	 * if(result.hasErrors()) { return this.validar(result); }
-	 * 
-	 * Pedidos pedidoDb = service.actualizar(pedidoDTO, id); if(pedidoDb != null) {
-	 * return ResponseEntity.status(HttpStatus.CREATED).body(pedidoDb);
-	 * 
-	 * } return ResponseEntity.notFound().build(); }
-	 */
 	
 }

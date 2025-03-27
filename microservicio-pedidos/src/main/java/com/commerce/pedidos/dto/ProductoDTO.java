@@ -1,4 +1,7 @@
 package com.commerce.pedidos.dto;
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,8 +27,7 @@ public class ProductoDTO {
     @Min(value = 0, message = "El stock no puede ser negativo")
     private Integer stock;
 
-    // Lista de pedidos donde aparece este producto (IDs)
-    private Long pedidos;
+    private List<Long> pedidos = new ArrayList<>();
 
 	public Long getId() {
 		return id;
@@ -67,13 +69,11 @@ public class ProductoDTO {
 		this.stock = stock;
 	}
 
-	public Long getPedidos() {
+	public List<Long> getPedidos() {
 		return pedidos;
 	}
 
-	public void setPedidos(Long pedidos) {
+	public void setPedidos(List<Long> pedidos) {
 		this.pedidos = pedidos;
-	} 	
-	
-	
+	}	
 }

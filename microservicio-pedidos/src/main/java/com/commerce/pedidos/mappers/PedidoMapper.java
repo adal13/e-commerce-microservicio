@@ -1,25 +1,12 @@
 package com.commerce.pedidos.mappers;
-
-import java.util.Optional;
-
-import javax.print.attribute.standard.MediaSize.Other;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.commerce.commons.models.entity.Cliente;
 import com.commerce.commons.models.entity.Pedidos;
-import com.commerce.commons.models.entity.Productos;
-import com.commerce.pedidos.clients.PedidoClient;
-import com.commerce.pedidos.controllers.PedidoControllers;
 import com.commerce.pedidos.dto.PedidoDTO;
-import com.commerce.pedidos.dto.ProductoDTO;
 
 @Component
 public class PedidoMapper {
-	
-	@Autowired
-	private PedidoClient pedidoClient;
 	
 	public PedidoDTO entityToDto(Pedidos pedido) {
 		if(pedido == null) {
@@ -32,6 +19,7 @@ public class PedidoMapper {
 		pedidoDTO.setFechaCreacion(pedido.getFechaCreacion());
 		pedidoDTO.setIdEstado(pedido.getIdEstado());
 		pedidoDTO.setProductosIds(pedido.getProductos() != null ? ((Cliente) pedido.getProductos()).getId() : null);
+		
 		return pedidoDTO;
 	}
 	
@@ -46,10 +34,9 @@ public class PedidoMapper {
 		pedido.setIdEstado(pedidoDTO.getIdEstado()); 
 		
 		if (pedidoDTO.getClienteId() != null) {
-			
-			 Cliente cliente = new Cliente();
-		        cliente.setId(pedidoDTO.getClienteId());
-		        pedido.setCliente(cliente);
+			Cliente cliente = new Cliente();
+	        cliente.setId(pedidoDTO.getClienteId());
+	        pedido.setCliente(cliente);
 		}
 		
 		return pedido;

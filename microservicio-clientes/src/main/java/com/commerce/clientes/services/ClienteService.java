@@ -8,4 +8,7 @@ public interface ClienteService extends CommonService<Cliente> {
 	Cliente actualizar(ClienteDTO clienteDTO, Long id);
 	
 	Cliente crear(ClienteDTO clienteDTO);
+
+	
+	
 }

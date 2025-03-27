@@ -1,7 +1,11 @@
 package com.commerce.clientes.dto;
 
+import java.util.List;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 
 public class ClienteDTO {
@@ -27,6 +31,9 @@ public class ClienteDTO {
     @Size(min = 1, max = 100, message = "La dirección debe tener entre 1 y 100 caracteres")
     private String direccion;
 
+    @Null(message = "Debe haber al menos un producto en el pedido")
+    private List<Long> pedidosIds; // Lista de IDs de productos en lugar de objetos completos
+    
 	public Long getId() {
 		return id;
 	}
@@ -75,5 +82,15 @@ public class ClienteDTO {
 		this.direccion = direccion;
 	}
 
+	public List<Long> getPedidosIds() {
+		return pedidosIds;
+	}
+
+	public void setPedidosIds(List<Long> pedidosIds) {
+		this.pedidosIds = pedidosIds;
+	}
+
+	
+	
     
 }

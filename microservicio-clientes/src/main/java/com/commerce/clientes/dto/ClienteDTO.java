@@ -31,7 +31,6 @@ public class ClienteDTO {
     @Size(min = 1, max = 100, message = "La dirección debe tener entre 1 y 100 caracteres")
     private String direccion;
 
-    @Null(message = "Debe haber al menos un producto en el pedido")
     private List<Long> pedidosIds; // Lista de IDs de productos en lugar de objetos completos
     
 	public Long getId() {

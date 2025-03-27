@@ -9,8 +9,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.commerce.commons.models.entity.Cliente;
 import com.commerce.commons.models.entity.Pedidos;
 import com.commerce.commons.models.entity.Productos;
+import com.commerce.pedidos.clients.ClienteClient;
 import com.commerce.pedidos.clients.ProductoClient;
 import com.commerce.pedidos.dto.PedidoDTO;
 import com.commerce.pedidos.models.repositories.PedidoRepository;
@@ -25,9 +28,12 @@ public class PedidoServiceImpl implements IService<Pedidos>{
 	
 	private final ProductoClient productoCliente;
 	
+	private final ClienteClient clienteClient;
+	
 
-	public PedidoServiceImpl(ProductoClient productoCliente) {
+	public PedidoServiceImpl(ProductoClient productoCliente, ClienteClient clienteClient) {
 		this.productoCliente = productoCliente;
+		this.clienteClient = clienteClient;
 	}
 
 	@Override
@@ -53,24 +59,42 @@ public class PedidoServiceImpl implements IService<Pedidos>{
 	@Override
 	@Transactional
 	public Pedidos crear(PedidoDTO pedidoDTO) {
-		// return repository.save(entity);
-		
-		 Pedidos pedido = new Pedidos();
-		 
-		 
-		 Productos producto;
-		 try {
-		     producto = productoCliente.getProductoById(pedidoDTO.getClienteId());
-		 } catch (FeignException.NotFound e) {
-		     throw new RuntimeException("Producto no encontrado");
-		 }
+		 if (pedidoDTO.getClienteId() == null) {
+		        throw new IllegalArgumentException("El cliente es obligatorio");
+		    }
 
-		 
+		    Pedidos pedido = new Pedidos();
+
+		    Cliente cliente = clienteClient.getClienteById(pedidoDTO.getClienteId());
+		    if (cliente == null) {
+		        throw new RuntimeException("Cliente no encontrado");
+		    }
+
+		    List<Productos> productos = new ArrayList<>();
+		    if (pedidoDTO.getProductosIds() != null && !pedidoDTO.getProductosIds().isEmpty()) {
+		        for (Long productoId : pedidoDTO.getProductosIds()) {
+		            try {
+		                Productos producto = productoCliente.getProductoById(productoId);
+		                if (producto != null) {
+		                    productos.add(producto);
+		                } else {
+		                    throw new RuntimeException("Producto no encontrado con ID: " + productoId);
+		                }
+		            } catch (FeignException.NotFound e) {
+		                throw new RuntimeException("Producto no encontrado con ID: " + productoId);
+		            }
+		        }
+		    }
+
+		    pedido.setCliente(cliente);
 		    pedido.setTotal(pedidoDTO.getTotal());
 		    pedido.setFechaCreacion(pedidoDTO.getFechaCreacion());
 		    pedido.setIdEstado(pedidoDTO.getIdEstado());
-		    // Otros campos...
+
+		    pedido.setProductos(productos);
+
 		    return repository.save(pedido);
+
 	}
 
 	@Override
@@ -100,33 +124,6 @@ public class PedidoServiceImpl implements IService<Pedidos>{
 			return null;
 		}
 	}
-
-	/*@Override
-	@Transactional
-	public Pedidos addProducto(Long idPedido, Long idProducto) {
-	    Pedidos pedido = null;
-
-	    Optional<Pedidos> optPedido = repository.findById(idPedido);
-	    
-	    if (optPedido.isPresent()) {
-	        Optional<Productos> optProducto = productoCliente.getProductoById(idProducto);
-
-	        if (optProducto.isPresent()) {
-	            pedido = optPedido.get();
-	            Productos producto = optProducto.get();
-
-	            // Agregar producto al pedido
-	            pedido.addProducto(producto);
-	            pedido = repository.save(pedido);
-
-	            // Relacionar el producto con el pedido (si aplica)
-	            producto.setPedidos((List<Pedidos>) pedido); // Asegúrate de tener este método en Productos
-	            producto = productoCliente.save(producto);
-	        }
-	    }
-
-	    return pedido;
-	}*/
 	
 	
 	public Pedidos addProducto(Long idPedido, Long idProducto) {

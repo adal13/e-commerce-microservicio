@@ -1,6 +1,8 @@
 package com.commerce.pedidos.controllers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,7 @@ import com.commerce.pedidos.dto.PedidoDTO;
 import com.commerce.pedidos.services.PedidoService;
 import com.commerce.pedidos.services.PedidoServiceImpl;
 
+import feign.FeignException;
 import jakarta.validation.Valid;
 
 
@@ -49,8 +52,6 @@ public class PedidoControllers{
 	    return ResponseEntity.ok(productos);
 	}
 
-	
-	
 	@GetMapping("/{id}")
 	public ResponseEntity<Pedidos> getById(@PathVariable Long id){
 		Optional<Pedidos> optPedido = pedidoServiceImpl.obtenerPorId(id);
@@ -61,20 +62,40 @@ public class PedidoControllers{
 		}
 	}
 	
-	//@PostMapping("/pedido-dto")
-	//public ResponseEntity<Pedidos> create(@RequestBody PedidoDTO pedidoDTO){
-	//	return ResponseEntity.status(HttpStatus.CREATED).body(pedidoServiceImpl.crear(pedidoDTO));
-	//}	
-	
-	
 	@PostMapping("/pedido-dto")
-	public ResponseEntity<Pedidos> create(@Valid @RequestBody PedidoDTO pedidoDTO, BindingResult result) {
+	public ResponseEntity<?> create(@Valid @RequestBody PedidoDTO pedidoDTO, BindingResult result) {
+		// 1. Manejo de errores de validación
 	    if (result.hasErrors()) {
-	        // Maneja los errores de validación (por ejemplo, devolviendo los errores como respuesta)
-	        return ResponseEntity.badRequest().body(null);
+	        Map<String, String> errores = new HashMap<>();
+	        result.getFieldErrors().forEach(error -> {
+	            errores.put(error.getField(), error.getDefaultMessage());
+	        });
+	        return ResponseEntity.badRequest().body(errores);
 	    }
-	    Pedidos pedido = pedidoServiceImpl.crear(pedidoDTO);  // Suponiendo que se convierte en Pedidos
-	    return ResponseEntity.status(HttpStatus.CREATED).body(pedido);
+
+	    try {
+	        // 2. Intentar crear el pedido
+	        Pedidos pedido = pedidoServiceImpl.crear(pedidoDTO);
+	        return ResponseEntity.status(HttpStatus.CREATED).body(pedido);
+
+	    } catch (FeignException.NotFound e) {
+	        // 3. Capturar errores específicos de Feign (ej: cliente no encontrado)
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+	            Map.of("mensaje", "Recurso no encontrado: " + e.getMessage())
+	        );
+
+	    } catch (IllegalArgumentException e) {
+	        // 4. Capturar errores de lógica de negocio
+	        return ResponseEntity.badRequest().body(
+	            Map.of("mensaje", e.getMessage())
+	        );
+
+	    } catch (Exception e) {
+	        // 5. Manejo de errores inesperados
+	        return ResponseEntity.internalServerError().body(
+	            Map.of("mensaje", "Error interno al procesar el pedido")
+	        );
+	    }
 	}
 
 	

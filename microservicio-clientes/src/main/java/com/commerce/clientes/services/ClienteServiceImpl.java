@@ -37,19 +37,9 @@ public class ClienteServiceImpl  extends CommonServiceImpl<Cliente, ClienteRepos
 	        cliente.setEmail(clienteDTO.getEmail());
 	        cliente.setTelefono(clienteDTO.getTelefono());
 
-	        if (clienteDTO.getPedidosIds() != null) {
-	            List<Pedidos> pedidos = pedidoCliente.getProductoById(clienteDTO.getPedidosIds());
-	            
-	            cliente.setPedidos(pedidos); 
-	            
-	            for (Pedidos pedido : pedidos) {
-	                pedido.setCliente(cliente);
-	            }
-	        // Guardar cliente actualizado
 	        return repository.save(cliente);
-	        }
 	    }
-	    return null; // Si no se encuentra el cliente, se devuelve null
+	    return null;
 	}
 	
 	@Override

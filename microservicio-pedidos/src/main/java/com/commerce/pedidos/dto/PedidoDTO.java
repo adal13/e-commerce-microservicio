@@ -1,13 +1,16 @@
 package com.commerce.pedidos.dto;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 
+/**
+ * 
+ */
 public class PedidoDTO {
 	private Long id;
 
@@ -27,7 +30,7 @@ public class PedidoDTO {
     private Integer idEstado;
 
     @NotNull(message = "Debe haber al menos un producto en el pedido")
-    private Long productosIds; // Lista de IDs de productos en lugar de objetos completos
+    private List<Long> productosIds; // Lista de IDs de productos en lugar de objetos completos
 
 	public Long getId() {
 		return id;
@@ -36,6 +39,8 @@ public class PedidoDTO {
 	public void setId(Long id) {
 		this.id = id;
 	}
+
+
 
 	public Long getClienteId() {
 		return clienteId;
@@ -69,11 +74,13 @@ public class PedidoDTO {
 		this.idEstado = idEstado;
 	}
 
-	public Long getProductosIds() {
+	public List<Long> getProductosIds() {
 		return productosIds;
 	}
 
-	public void setProductosIds(Long productosIds) {
+	public void setProductosIds(List<Long> productosIds) {
 		this.productosIds = productosIds;
 	}
+
+
 }

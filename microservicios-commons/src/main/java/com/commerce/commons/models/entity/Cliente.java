@@ -59,7 +59,6 @@ public class Cliente {
 	    
 	    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	    @JsonManagedReference
-	    @Null(message = "Puede llevar datos nulos")
 		private List<Pedidos> pedidos;
 	    
 		public Cliente() {

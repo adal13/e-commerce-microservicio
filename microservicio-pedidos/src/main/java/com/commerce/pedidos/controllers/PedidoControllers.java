@@ -22,9 +22,12 @@ import com.commerce.commons.controllers.CommonController;
 import com.commerce.commons.models.entity.Pedidos;
 import com.commerce.commons.models.entity.Productos;
 import com.commerce.pedidos.MicroservicioPedidosApplication;
+import com.commerce.pedidos.clients.ProductoClient;
 import com.commerce.pedidos.dto.PedidoDTO;
+import com.commerce.pedidos.models.repositories.PedidoRepository;
 import com.commerce.pedidos.services.PedidoService;
 import com.commerce.pedidos.services.PedidoServiceImpl;
+import com.commerce.productos.models.repository.ProductosRepository;
 
 import feign.FeignException;
 import jakarta.validation.Valid;
@@ -36,6 +39,13 @@ import jakarta.validation.Valid;
 @RestController
 public class PedidoControllers{
 
+	@Autowired
+	private PedidoRepository repository;
+	
+	@Autowired
+	private ProductoClient productoClient;
+	
+	
 	
 	@Autowired
 	private PedidoServiceImpl pedidoServiceImpl;
@@ -121,16 +131,37 @@ public class PedidoControllers{
 	}
 	
 	@PutMapping("/{idPedido}/{idProducto}")
-	public ResponseEntity<Pedidos> addProducto(@PathVariable Long idPedido, @PathVariable Long idProducto) {
-		System.out.println("addProducto");
-	    Pedidos pedidoActualizado = pedidoServiceImpl.addProducto(idPedido, idProducto);
-	    
-	    if (pedidoActualizado != null) {
-	        return ResponseEntity.ok(pedidoActualizado);
-	    } else {
-	        return ResponseEntity.notFound().build();
+	public Pedidos addProducto(Long idPedido, Long idProducto) {
+	    // Buscar el pedido en la base de datos
+	    Optional<Pedidos> pedidoOpt = repository.findById(idPedido);
+	    if (!pedidoOpt.isPresent()) {
+	        throw new RuntimeException("Pedido no encontrado");
 	    }
+
+	    // Obtener el pedido
+	    Pedidos pedido = pedidoOpt.get();
+
+	    // Verificar si el producto ya está en el pedido
+	    boolean productoYaExiste = pedido.getProductos().stream()
+	        .anyMatch(producto -> producto.getId().equals(idProducto));
+
+	    if (productoYaExiste) {
+	        throw new RuntimeException("El producto ya está en el pedido");
+	    }
+
+	    // Llamar a FeignClient para obtener el producto
+	    Productos producto;
+	    try {
+	        producto = productoClient.getProductoById(idProducto);
+	    } catch (FeignException.NotFound e) {
+	        throw new RuntimeException("Producto no encontrado con ID: " + idProducto);
+	    }
+
+	    // Agregar producto al pedido y guardar
+	    pedido.getProductos().add(producto);
+	    return repository.save(pedido);
 	}
+
 
 	
 }

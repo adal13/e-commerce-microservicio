@@ -100,29 +100,45 @@ public class PedidoServiceImpl implements IService<Pedidos>{
 	@Override
 	@Transactional
 	public Pedidos editar(Pedidos entity, Long id) {
-		Optional<Pedidos> optPedidos = repository.findById(id);
-		if(optPedidos.isPresent()) {
-			Pedidos pedidosDb = optPedidos.get();
-			pedidosDb.setCliente(entity.getCliente());
-			pedidosDb.setTotal(entity.getTotal());
-			pedidosDb.setFechaCreacion(entity.getFechaCreacion());
-			pedidosDb.setIdEstado(entity.getIdEstado());
-			return repository.save(pedidosDb);
-		}else {
-			return null;
-		}
+		 Optional<Pedidos> optPedidos = repository.findById(id);
+		    
+		    if (optPedidos.isPresent()) {
+		        Pedidos pedidosDb = optPedidos.get();
+
+		        // Actualizar solo los campos necesarios
+		        if (entity.getCliente() != null) {
+		            pedidosDb.setCliente(entity.getCliente());
+		        }
+		        if (entity.getTotal() != null) {
+		            pedidosDb.setTotal(entity.getTotal());
+		        }
+		        if (entity.getFechaCreacion() != null) {
+		            pedidosDb.setFechaCreacion(entity.getFechaCreacion());
+		        }
+		        if (entity.getIdEstado() != null) {
+		            pedidosDb.setIdEstado(entity.getIdEstado());
+		        }
+		        if (entity.getProductos() != null && !entity.getProductos().isEmpty()) {
+		            pedidosDb.setProductos(entity.getProductos());
+		        }
+
+		        return repository.save(pedidosDb);
+		    } else {
+		        throw new RuntimeException("Pedido no encontrado con ID: " + id);
+		    }
 	}
 
 	@Override
 	@Transactional
 	public Pedidos eliminar(Long id) {
-		Optional<Pedidos> optPedido = repository.findById(id);
-		if(optPedido.isPresent()) {
-			repository.deleteById(id);
-			return optPedido.get();
-		}else {
-			return null;
-		}
+		  Optional<Pedidos> optPedido = repository.findById(id);
+		    if (optPedido.isPresent()) {
+		        Pedidos pedido = optPedido.get();
+		        pedido.setIdEstado(4); // Estado "Eliminado"
+		        return repository.save(pedido);
+		    } else {
+		        throw new RuntimeException("Pedido no encontrado con ID: " + id);
+		    }
 	}
 	
 	

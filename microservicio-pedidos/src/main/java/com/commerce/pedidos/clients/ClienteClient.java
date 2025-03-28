@@ -12,12 +12,9 @@ import com.commerce.commons.models.entity.Cliente;
 
 @FeignClient("microservicio-clientes")
 public interface ClienteClient {
-	  @GetMapping("/clientes/{id}")
-	  Cliente getClienteById(@PathVariable("id") Long id);
+	  //@GetMapping("/clientes/{id}")
+	  //Cliente getClienteById(@PathVariable("id") Long id);
 	  
 	  @GetMapping("/{id}")
-	  Cliente getClienteById(List<Long> clienteId);
-	  
-	  @PostMapping("/clientes/bulk")
-	  List<Cliente> getClientesById(@RequestBody List<Long> clienteIds);
+	  Cliente getClienteById(@PathVariable("id") Long id);
 }

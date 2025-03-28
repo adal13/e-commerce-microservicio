@@ -33,8 +33,7 @@ import feign.FeignException;
 import jakarta.validation.Valid;
 
 
-@CrossOrigin(value = "http://localhost:4200")
-
+// @CrossOrigin(value = "http://localhost:4200")
 
 @RestController
 public class PedidoControllers{

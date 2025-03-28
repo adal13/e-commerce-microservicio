@@ -49,16 +49,20 @@ public class ClienteController extends CommonController<Cliente, ClienteService>
 	@PutMapping("/{id}")
 	public ResponseEntity<?> update(@Valid @RequestBody ClienteDTO clienteDTO,
 			BindingResult result, @PathVariable Long id){
-		if (result.hasErrors()) {
-			return this.validar(result);
-		}
-		
-		Cliente clienteDb = service.actualizar(clienteDTO, id);
-		
-		if (clienteDb != null) {
-			return ResponseEntity.status(HttpStatus.CREATED).body(clienteDb);
-		}
-		return ResponseEntity.notFound().build();
+		 // 1. Validar errores del DTO
+	    if (result.hasErrors()) {
+	        return this.validar(result); // Retorna errores de validación
+	    }
+
+	    // 2. Actualizar el cliente
+	    Cliente clienteActualizado = service.actualizar(clienteDTO, id);
+
+	    // 3. Manejar respuesta
+	    if (clienteActualizado != null) {
+	        return ResponseEntity.ok(clienteActualizado); // HTTP 200 OK con el recurso actualizado
+	    } else {
+	        return ResponseEntity.notFound().build(); // HTTP 404 si no existe el cliente
+	    }
 	}
 	
 }

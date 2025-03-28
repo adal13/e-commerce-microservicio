@@ -60,14 +60,12 @@ public class Pedidos {
     @NotNull(message = "El estado es obligatorio")
     private Integer idEstado;
     
-    @JsonIgnoreProperties({"handler", "hibernateLazyInitializer"})
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(
         name = "PEDIDOS_PRODUCTOS", // Nombre de la tabla intermedia
         joinColumns = @JoinColumn(name = "ID_PEDIDO", referencedColumnName = "ID_PEDIDO"), // Columna que referencia a PEDIDOS
         inverseJoinColumns = @JoinColumn(name = "ID_PRODUCTO", referencedColumnName = "ID_PRODUCTO") // Columna que referencia a PRODUCTOS
     )
-    @JsonManagedReference
     private List<Productos> productos; // Usa Set para evitar duplicados
     
 
